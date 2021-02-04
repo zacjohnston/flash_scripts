@@ -35,7 +35,7 @@ fi
 
 # setup source files (uncomment ONE)
 # Hybrid Net
-./setup CoreCollapse/M1 -auto -1d +spherical -objdir "obj/obj_${simulationDirName}" -nxb=16 +newMpole +spark -with-unit=physics/RadTrans/RadTransMain/M1/twoStep m1_groups=12 -maxblocks=1000 +hybridEOS +aprox21
+./setup CoreCollapse/M1 -auto -1d +spherical -objdir "obj/obj_${simulationDirName}" --site=dev-intel16 -nxb=16 +newMpole +spark -with-unit=physics/RadTrans/RadTransMain/M1/twoStep m1_groups=12 -maxblocks=1000 +hybridEOS +aprox21
 
 # noHybrid noNet
 #./setup CoreCollapse/M1 -auto -1d +spherical -objdir "obj/${simulationDirName}" -nxb=16 +newMpole +spark -with-unit=physics/RadTrans/RadTransMain/M1/twoStep m1_groups=12 -maxblocks=1000 useHybridEOS=False
@@ -54,7 +54,7 @@ simPath=${flashDir}/runs/${model_set}/${simulationDirName}
 mkdir ${simPath}
 
 cd ${flashDir}
-cp flash.par ${simPath}/
+cp flash_helmnet.par ${simPath}/
 #cp sbatch_run.sh ${simPath}/
 
 cd ${simPath}

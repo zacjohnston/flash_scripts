@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+
+# argument is a simulation directory name
+if [ $# -eq 0 ]; then
+    read -p "please enter a directory name: " simulationDirName
+else
+    if [ $# -eq 1 ]; then
+        simulationDirName=$1
+    else
+        echo "setupCCSN takes at most one argument ($# given)"
+        exit 0
+    fi
+fi
+
+# check if the simulation dir exists
+if [ -d "runs/${simulationDirName}" ]; then 
+    echo "The simulation directory 'runs/${simulationDirName}' already exists"
+    read -p "Do you want to continue (y/n)? " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        exit 1
+    fi
+fi
+
+flashDir="/mnt/research/SNAPhU/zac/BANG"
+srcDir="${flashDir}/obj/${simulationDirName}"
+eosDir="/mnt/research/SNAPhU/zac/tables"
+
+# check the EoS folder
+if [ ! -d "$eosDir" ] || [ ! "$(ls -A $eosDir)" ]; then 
+    echo "The given EoS folder does not exist or is empty."
+    exit 1
+fi
+
+# setup source files (uncomment ONE)
+# hybrid net
+#./setup CoreCollapse/M1 -auto -1d +spherical -objdir "obj/${simulationDirName}" -nxb=16 +newMpole +spark -with-unit=physics/RadTrans/RadTransMain/M1/twoStep m1_groups=12 -maxblocks=1000 --with-unit=physics/Eos/EosMain/Hybrid --with-unit=physics/sourceTerms/Burn/BurnMain/nuclearBurn/Aprox21
+
+# hybrid noNet
+#./setup CoreCollapse/M1 -auto -1d +spherical -objdir "obj/${simulationDirName}" -nxb=16 +newMpole +spark -with-unit=physics/RadTrans/RadTransMain/M1/twoStep m1_groups=12 -maxblocks=1000 --with-unit=physics/Eos/EosMain/Hybrid --without-unit=physics/sourceTerms/Burn/BurnMain/nuclearBurn/Aprox21
+
+# noHybrid noNet
+#./setup CoreCollapse/M1 -auto -1d +spherical -objdir "obj/${simulationDirName}" -nxb=16 +newMpole +spark -with-unit=physics/RadTrans/RadTransMain/M1/twoStep m1_groups=12 -maxblocks=1000 --without-unit=physics/Eos/EosMain/Hybrid --without-unit=physics/sourceTerms/Burn/BurnMain/nuclearBurn/Aprox21
+
+# Copied from Sean
+# Hybrid Net
+./setup CoreCollapse/M1 -auto -1d +spherical -objdir "obj/${simulationDirName}" -nxb=16 +newMpole +spark -with-unit=physics/RadTrans/RadTransMain/M1/twoStep m1_groups=12 -maxblocks=1000 +hybridEOS +aprox21
+
+# noHybrid noNet [sean]
+#./setup CoreCollapse/M1 -auto -1d +spherical -objdir "obj/${simulationDirName}" -nxb=16 +newMpole +spark -with-unit=physics/RadTrans/RadTransMain/M1/twoStep m1_groups=12 -maxblocks=1000 useHybridEOS=False
+
+# noHybrid net [sean]
+# ./setup CoreCollapse/M1 -auto -1d +spherical -objdir "obj/${simulationDirName}" -nxb=16 +newMpole +spark -with-unit=physics/RadTrans/RadTransMain/M1/twoStep m1_groups=12 -maxblocks=1000 useHybridEOS=False +aprox21
+
+
+# compile the code
+cd "obj/${simulationDirName}"
+make -j 4 || exit 1
+
+# setup simulation folder
+cd ../..
+mkdir runs/${simulationDirName}
+
+cp flash.par runs/${simulationDirName}/
+cp sbatch_run.sh runs/${simulationDirName}/
+
+cd runs/${simulationDirName}
+mkdir output
+
+# link files for simulation
+ln -sf "${srcDir}/flash4"
+ln -sf "${srcDir}/helm_table.dat"
+ln -sf "${srcDir}/SpeciesList.txt"
+ln -sf "${srcDir}/winvne_v2.0.dat"
+ln -sf ${eosDir} EoSTables
+ln -sf "${flashDir}/source/Simulation/SimulationMain/CoreCollapse/progenitors"
+
+echo "Simulation is ready!"
+echo "Please write your flash.par and go!"

@@ -1,0 +1,37 @@
+#!/bin/bash
+#=============================================
+# Pulls FLASH models from remote cluster
+#
+# Must set environment variables:
+#  - FLASH_MODELS : path to local directory of models
+#=============================================
+# Check Inputs
+#=============================================
+if [ $# -ne 2 ]; then
+  if [ $# -ne 1 ]; then
+    echo "Must supply 1 or 2 arguments:
+  1. model_set
+  2. model (optional)"
+    exit 1
+  fi
+fi
+
+if [ -z "${FLASH_MODELS}" ]; then
+  echo "Must set FLASH_MODELS as path to local models"
+fi
+#=============================================
+
+MODEL_SET=${1}
+REMOTE_PATH="isync:/mnt/research/SNAPhU/zac/runs"
+LOCAL_PATH=${FLASH_MODELS}
+
+if [[ $# == 1 ]]; then
+  PULL_FROM="${REMOTE_PATH}/${MODEL_SET}"
+  PULL_TO="${FLASH_MODELS}"
+else
+  MODEL=${2}
+  PULL_FROM="${REMOTE_PATH}/${MODEL_SET}/${MODEL}"
+  PULL_TO="${FLASH_MODELS}/${MODEL_SET}"
+fi
+
+\rsync -av --no-links --info=progress2 "${PULL_FROM}" "${PULL_TO}/"

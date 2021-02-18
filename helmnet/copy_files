@@ -40,7 +40,7 @@ srcDir="${flashDir}/obj/obj_${simulationDirName}"
 mkdir ${simPath}
 
 cd ${flashDir}
-cp flash_helmnet.par ${simPath}/flash.par
+cp ${FLASH_PARFILES}/helmnet/flash.par ${simPath}/flash.par
 #cp sbatch_run.sh ${simPath}/
 
 cd ${simPath}

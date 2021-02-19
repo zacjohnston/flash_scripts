@@ -34,6 +34,11 @@ fi
 model_path="${BANG}/runs/${model_set}/${model}"
 obj_path="${BANG}/obj/obj_${obj_model}"
 
+if [ ! -d "${obj_path}" ]; then
+    echo "The obj folder 'obj_${obj_model}' does not exist"
+    exit 1
+fi
+
 if [ -d "${model_path}" ]; then 
     echo "The simulation directory '${model_path}' already exists"
     read -p "Do you want to continue (y/n)? " -n 1 -r
@@ -42,8 +47,8 @@ if [ -d "${model_path}" ]; then
         exit 1
     fi
 fi
+#=============================================
 
-# setup model folder
 mkdir -p "${model_path}/output"
 cd "${model_path}" || exit
 

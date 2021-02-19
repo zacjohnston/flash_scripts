@@ -1,27 +1,38 @@
 #!/usr/bin/env bash
-
-flashDir="/mnt/research/SNAPhU/zac/BANG"
-eosDir="/mnt/research/SNAPhU/zac/tables"
-
-# argument is a simulation directory name
-if [ $# -eq 0 ]; then
-    read -p "please enter a model_set name: " model_set
-    read -p "please enter a model name: " simulationDirName
-else
-    if [ $# -eq 2 ]; then
-	model_set=$1
-        simulationDirName=$2
-    else
-        echo "setupCCSN takes two arguments: model_set, model"
-        exit 0
-    fi
+#=============================================
+# Setup run dir and copy required files
+#
+# Must set environment variables:
+#  - BANG : path to BANG repo
+#  - EOS : path to directory EOS tables
+#=============================================
+if [ $# -ne 2 ] || [ $# -ne 3 ]; then
+    echo "Must supply 2 or 3 arguments:
+  1. model_set
+  2. model
+  3. obj_model (optional, if different from 'model')"
+    exit 1
 fi
 
-# check if the simulation dir exists
-simPath=${flashDir}/runs/${model_set}/${simulationDirName}
+if [ ! -d "${EOS}" ]; then
+    echo "The given EoS folder does not exist"
+    exit 1
+fi
+#=============================================
+model_set=$1
+model=$2
 
-if [ -d "${simPath}" ]; then 
-    echo "The simulation directory '${simPath}' already exists"
+if [ $# -eq 3 ]; then
+  obj_model=$3
+else
+  obj_model=$model
+fi
+
+model_path=${BANG}/runs/${model_set}/${model}
+obj_path="${BANG}/obj/obj_${obj_model}"
+
+if [ -d "${model_path}" ]; then 
+    echo "The simulation directory '${model_path}' already exists"
     read -p "Do you want to continue (y/n)? " -n 1 -r
     echo
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -29,29 +40,22 @@ if [ -d "${simPath}" ]; then
     fi
 fi
 
-# check the EoS folder
-if [ ! -d "$eosDir" ] || [ ! "$(ls -A $eosDir)" ]; then 
-    echo "The given EoS folder does not exist or is empty."
-    exit 1
-fi
-
 # setup simulation folder
-srcDir="${flashDir}/obj/obj_${simulationDirName}"
-mkdir ${simPath}
+mkdir "${model_path}"
 
-cd ${flashDir}
-cp flash_helmnet.par ${simPath}/flash.par
-#cp sbatch_run.sh ${simPath}/
+cd "${BANG}" || exit
+cp flash_helmnet.par "${model_path}"/flash.par
+cp "${FLASH_SCRIPTS}/helmnet/submit.sb" "${model_path}/"
 
-cd ${simPath}
+cd "${model_path}" || exit
 mkdir output
 
 # link files for simulation
-ln -sf "${srcDir}/flash4"
-ln -sf "${srcDir}/helm_table.dat"
-ln -sf "${srcDir}/SpeciesList.txt"
-ln -sf "${srcDir}/winvne_v2.0.dat"
-ln -sf ${eosDir} EoSTables
-ln -sf "${flashDir}/source/Simulation/SimulationMain/CoreCollapse/progenitors"
+ln -sf "${obj_path}/flash4" .
+ln -sf "${obj_path}/helm_table.dat" .
+ln -sf "${obj_path}/SpeciesList.txt" .
+ln -sf "${obj_path}/winvne_v2.0.dat" .
+ln -sf "${EOS}" EoSTables
+ln -sf "${BANG}/source/Simulation/SimulationMain/CoreCollapse/progenitors" .
 
 echo "Simulation is ready!"

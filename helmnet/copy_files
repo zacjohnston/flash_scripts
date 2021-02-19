@@ -4,6 +4,8 @@
 #
 # Must set environment variables:
 #  - BANG : path to BANG repo
+#  - FLASH_PARFILES : path to flash_parfiles repo
+#  - FLASH_SCRIPTS : path to flash_scripts repo
 #  - EOS : path to directory EOS tables
 #=============================================
 if [ $# -ne 2 ] || [ $# -ne 3 ]; then

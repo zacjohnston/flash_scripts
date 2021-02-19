@@ -15,10 +15,6 @@ if [ -z "${MODEL}" ]; then
   echo "Must provide MODEL"
   exit 1
 fi
-if [ -z "${FLASH_MODELS}" ]; then
-  echo "Must set FLASH_MODELS path"
-  exit 1
-fi
 
 module purge
 module load GCC/6.4.0-2.28

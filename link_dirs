@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+ln -s ${FLASH_PARFILES} ${BANG}/parfiles
+ln -s ${FLASH_SCRIPTS} ${BANG}/scripts
+ln -s ${FLASH_MODELS} ${BANG}/runs
+ln -s ${FLASH_OBJ} ${BANG}/obj

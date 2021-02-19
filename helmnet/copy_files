@@ -18,7 +18,7 @@ if [ ! -d "${EOS}" ]; then
     echo "The given EoS folder does not exist"
     exit 1
 fi
-#=============================================
+
 model_set=$1
 model=$2
 
@@ -27,8 +27,9 @@ if [ $# -eq 3 ]; then
 else
   obj_model=$model
 fi
+#=============================================
 
-model_path=${BANG}/runs/${model_set}/${model}
+model_path="${BANG}/runs/${model_set}/${model}"
 obj_path="${BANG}/obj/obj_${obj_model}"
 
 if [ -d "${model_path}" ]; then 
@@ -40,22 +41,18 @@ if [ -d "${model_path}" ]; then
     fi
 fi
 
-# setup simulation folder
-mkdir "${model_path}"
-
-cd "${BANG}" || exit
-cp flash_helmnet.par "${model_path}"/flash.par
-cp "${FLASH_SCRIPTS}/helmnet/submit.sb" "${model_path}/"
-
+# setup model folder
+mkdir -p "${model_path}/output"
 cd "${model_path}" || exit
-mkdir output
 
-# link files for simulation
+# get files for simulation
+cp "${FLASH_PARFILES}/helmnet/flash.par" .
+cp "${FLASH_SCRIPTS}/helmnet/submit.sb" .
 ln -sf "${obj_path}/flash4" .
 ln -sf "${obj_path}/helm_table.dat" .
 ln -sf "${obj_path}/SpeciesList.txt" .
 ln -sf "${obj_path}/winvne_v2.0.dat" .
-ln -sf "${EOS}" EoSTables
 ln -sf "${BANG}/source/Simulation/SimulationMain/CoreCollapse/progenitors" .
+ln -sf "${EOS}" EoSTables
 
 echo "Simulation is ready!"

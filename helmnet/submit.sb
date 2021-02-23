@@ -21,7 +21,8 @@ module load GCC/6.4.0-2.28
 module load OpenMPI/2.1.2
 module load HDF5/1.8.20
  
-cd "${FLASH_MODELS}/helmnet/${MODEL}" || exit
+cd "/mnt/research/SNAPhU/zac/BANG/runs/helmnet/${MODEL}" || exit
+
 mpirun -np 1 ./flash4 -par_file flash.par
  
 scontrol show job "$SLURM_JOB_ID"     ### write job information to output file

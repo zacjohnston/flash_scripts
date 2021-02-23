@@ -48,18 +48,17 @@ if [ -d "${model_path}" ]; then
     fi
 fi
 #=============================================
-
-mkdir -p "${model_path}/output"
+mkdir -pv "${model_path}/output"
 cd "${model_path}" || exit
 
 # get files for simulation
-cp "${FLASH_PARFILES}/helmnet/flash.par" .
-cp "${FLASH_SCRIPTS}/helmnet/submit.sb" .
-ln -sf "${obj_path}/flash4" .
-ln -sf "${obj_path}/helm_table.dat" .
-ln -sf "${obj_path}/SpeciesList.txt" .
-ln -sf "${obj_path}/winvne_v2.0.dat" .
-ln -sf "${BANG}/source/Simulation/SimulationMain/CoreCollapse/progenitors" .
-ln -sf "${EOS}" EoSTables
+cp -v "${FLASH_PARFILES}/helmnet/flash.par" .
+cp -v "${FLASH_SCRIPTS}/helmnet/submit.sb" .
+ln -v -sf "${obj_path}/flash4" .
+ln -sfv "${obj_path}/helm_table.dat" .
+ln -sfv "${obj_path}/SpeciesList.txt" .
+ln -sfv "${obj_path}/winvne_v2.0.dat" .
+ln -sfv "${BANG}/source/Simulation/SimulationMain/CoreCollapse/progenitors" .
+ln -sfv "${EOS}" EoSTables
 
-echo "Simulation is ready!"
+echo "Done!"

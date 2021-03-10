@@ -52,8 +52,11 @@ mkdir -pv "${model_path}/output"
 cd "${model_path}" || exit
 
 # get files for simulation
+echo "Copying files"
 cp -v "${FLASH_PARFILES}/helmnet/flash.par" .
 cp -v "${FLASH_SCRIPTS}/helmnet/submit.sb" .
+
+echo "Linking files"
 ln -v -sf "${obj_path}/flash4" .
 ln -sfv "${obj_path}/helm_table.dat" .
 ln -sfv "${obj_path}/SpeciesList.txt" .

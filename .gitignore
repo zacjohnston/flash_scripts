@@ -1,4 +1,6 @@
 temp/
+stir_scrape/out
+!stir_scrape/out/.keep
 
 # misc.
 .idea

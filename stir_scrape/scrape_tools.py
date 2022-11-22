@@ -8,9 +8,9 @@ from flashbang.simulation import Simulation
 # =======================================================
 #                    loading models
 # =======================================================
-def load_sim(mass,
-             alpha,
-             load_all=True):
+def load_model(mass,
+               alpha,
+               load_all=True):
     """Load model
 
     Returns : Simulation
@@ -53,7 +53,7 @@ def get_max_dats(dat_vars, masses, alpha):
         lists[var] = []
 
     for mass in masses:
-        model = load_sim(mass=mass, alpha=alpha, load_all=False)
+        model = load_model(mass=mass, alpha=alpha, load_all=False)
         model.load_dat()
 
         for var in dat_vars:
@@ -78,7 +78,7 @@ def get_max_times(dat_vars, masses, alpha):
         lists[var] = []
 
     for mass in masses:
-        model = load_sim(mass=mass, alpha=alpha, load_all=False)
+        model = load_model(mass=mass, alpha=alpha, load_all=False)
         model.load_dat()
 
         for var in dat_vars:
@@ -106,7 +106,7 @@ def get_dat(dat_vars, masses, alpha, dt=5e-5):
     dats = {}
 
     for mass in masses:
-        model = load_sim(mass=mass, alpha=alpha)
+        model = load_model(mass=mass, alpha=alpha)
         model.load_dat()
 
         dats[mass] = interpolate_dat(dat_table=model.dat,

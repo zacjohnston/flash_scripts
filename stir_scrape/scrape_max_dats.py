@@ -8,9 +8,6 @@ from mass_list import masses
 if __name__ == "__main__":
     t0 = time.time()
     dat_vars = ['rsh',
-                'lnue',
-                'lnua',
-                'lnux',
                 'mdot',
                 'turb_antesonic',
                 ]

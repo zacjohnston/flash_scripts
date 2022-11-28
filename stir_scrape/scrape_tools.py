@@ -35,7 +35,7 @@ def load_model(mass,
 
 
 # =======================================================
-#                   max values
+#                   dat scalars
 # =======================================================
 def get_max_dats(dat_vars, masses, alpha):
     """Return list of max values of .dat variables
@@ -84,6 +84,31 @@ def get_max_times(dat_vars, masses, alpha):
         for var in dat_vars:
             idx = model.dat[var].idxmax()
             lists[var] += [model.dat.loc[idx, 'time']]
+
+    return lists
+
+
+def get_end_dats(dat_vars, masses, alpha):
+    """Return list .dat variables at end of simulation
+
+    Returns : {var: []}
+
+    parameters
+    ----------
+    dat_vars : [str]
+    masses : [str]
+    alpha :str
+    """
+    lists = {}
+    for var in dat_vars:
+        lists[var] = []
+
+    for mass in masses:
+        model = load_model(mass=mass, alpha=alpha, load_all=False)
+        model.load_dat()
+
+        for var in dat_vars:
+            lists[var] += [model.dat[var].iloc[-1]]
 
     return lists
 

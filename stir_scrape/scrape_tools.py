@@ -34,6 +34,43 @@ def load_model(mass,
     return sim
 
 
+def get_all(masses,
+            alpha,
+            max_dat_vars,
+            end_dat_vars,
+            ):
+    """Return lists of all variables
+
+    Returns : {var: []}
+
+    parameters
+    ----------
+    masses : [str]
+    alpha :str
+    max_dat_vars : [str]
+    end_dat_vars : [str]
+    """
+    lists = {}
+    var_sets = {'max': max_dat_vars,
+                'end': end_dat_vars}
+
+    for prefix, vset in var_sets.items():
+        for var in vset:
+            lists[f'{prefix}_{var}'] = []
+
+    for mass in masses:
+        model = load_model(mass=mass, alpha=alpha, load_all=False)
+        model.load_dat()
+
+        for var in max_dat_vars:
+            lists[f'max_{var}'] += [model.dat[var].max()]
+
+        for var in end_dat_vars:
+            lists[f'end_{var}'] += [model.dat[var].iloc[-1]]
+
+    return lists
+
+
 # =======================================================
 #                   dat scalars
 # =======================================================
@@ -58,32 +95,6 @@ def get_max_dats(dat_vars, masses, alpha):
 
         for var in dat_vars:
             lists[var] += [model.dat[var].max()]
-
-    return lists
-
-
-def get_max_times(dat_vars, masses, alpha):
-    """Return list of times of max values of .dat variables
-
-    Returns : {var: []}
-
-    parameters
-    ----------
-    dat_vars : [str]
-    masses : [str]
-    alpha :str
-    """
-    lists = {}
-    for var in dat_vars:
-        lists[var] = []
-
-    for mass in masses:
-        model = load_model(mass=mass, alpha=alpha, load_all=False)
-        model.load_dat()
-
-        for var in dat_vars:
-            idx = model.dat[var].idxmax()
-            lists[var] += [model.dat.loc[idx, 'time']]
 
     return lists
 
@@ -116,7 +127,7 @@ def get_end_dats(dat_vars, masses, alpha):
 # =======================================================
 #                      dat
 # =======================================================
-def get_dat(dat_vars, masses, alpha, dt=5e-5):
+def get_dat_tables(dat_vars, masses, alpha, dt=5e-5):
     """Returns reduced dat tables from set of models
 
     Returns: {mass: pd.DataFrame}

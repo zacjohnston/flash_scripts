@@ -1,12 +1,4 @@
 temp/
-stir_scrape/out
+stir_scrape/out/*
 !stir_scrape/out/.keep
 slurm*.out
-
-# misc.
-.idea
-__pycache__
-*.pyc
-.DS_Store
-.vscode/
-*.code-workspace

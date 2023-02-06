@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+#=============================================
+# Setup run dir and copy required files
+#
+# Must set environment variables:
+#  - BANG : path to BANG repo
+#  - FLASH_PARFILES : path to flash_parfiles repo
+#  - FLASH_SCRIPTS : path to flash_scripts repo
+#  - EOS : path to directory EOS tables
+#=============================================
+if [ $# -ne 2 ] && [ $# -ne 3 ]; then
+    echo "Must supply 2 or 3 arguments:
+  1. model_set
+  2. model
+  3. obj_model (optional, if different from 'model')"
+    exit 1
+fi
+
+if [ ! -d "${EOS}" ]; then
+    echo "The given EoS folder does not exist"
+    exit 1
+fi
+
+model_set=$1
+model=$2
+
+if [ $# -eq 3 ]; then
+  obj_model=$3
+else
+  obj_model=$model
+fi
+#=============================================
+
+model_path="${BANG}/runs/${model_set}/${model}"
+obj_path="${BANG}/obj/obj_${obj_model}"
+
+if [ ! -d "${obj_path}" ]; then
+    echo "The obj folder 'obj_${obj_model}' does not exist"
+    exit 1
+fi
+
+if [ -d "${model_path}" ]; then 
+    echo "The simulation directory '${model_path}' already exists"
+    read -p "Do you want to continue (y/n)? " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        exit 1
+    fi
+fi
+#=============================================
+mkdir -pv "${model_path}/output"
+cd "${model_path}" || exit
+
+# get files for simulation
+echo "Copying files"
+cp -v "${FLASH_PARFILES}/helmnet/flash.par" .
+cp -v "${FLASH_SCRIPTS}/helmnet/submit.sb" .
+
+echo "Linking files"
+ln -v -sf "${obj_path}/flash4" .
+ln -sfv "${obj_path}/helm_table.dat" .
+ln -sfv "${obj_path}/SpeciesList.txt" .
+ln -sfv "${obj_path}/winvne_v2.0.dat" .
+ln -sfv "${BANG}/source/Simulation/SimulationMain/CoreCollapse/progenitors" .
+ln -sfv "${EOS}" EoSTables
+
+echo "Done!"

@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+
+flashDir="/mnt/research/SNAPhU/zac/BANG"
+eosDir="/mnt/research/SNAPhU/zac/tables"
+
+# argument is a simulation directory name
+if [ $# -eq 0 ]; then
+    read -pr "please enter a model_set name: " model_set
+    read -pr "please enter a model name: " simulationDirName
+else
+    if [ $# -eq 2 ]; then
+	model_set=$1
+        simulationDirName=$2
+    else
+        echo "setupCCSN takes two arguments: model_set, model"
+        exit 0
+    fi
+fi
+
+# check if the simulation dir exists
+if [ -d "runs/${simulationDirName}" ]; then 
+    echo "The simulation directory 'runs/${simulationDirName}' already exists"
+    read -p "Do you want to continue (y/n)? " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        exit 1
+    fi
+fi
+
+# check the EoS folder
+if [ ! -d "$eosDir" ] || [ ! "$(ls -A $eosDir)" ]; then 
+    echo "The given EoS folder does not exist or is empty."
+    exit 1
+fi
+
+# setup source files (uncomment ONE)
+# Hybrid Net
+./setup CoreCollapse/M1 -auto -1d +spherical -objdir "obj/obj_${simulationDirName}" --site=dev-intel16 -nxb=16 +newMpole +spark -with-unit=physics/RadTrans/RadTransMain/M1/twoStep m1_groups=12 -maxblocks=1000 +hybridEOS +aprox21
+
+# noHybrid noNet
+#./setup CoreCollapse/M1 -auto -1d +spherical -objdir "obj/${simulationDirName}" -nxb=16 +newMpole +spark -with-unit=physics/RadTrans/RadTransMain/M1/twoStep m1_groups=12 -maxblocks=1000 useHybridEOS=False
+
+# noHybrid net
+# ./setup CoreCollapse/M1 -auto -1d +spherical -objdir "obj/${simulationDirName}" -nxb=16 +newMpole +spark -with-unit=physics/RadTrans/RadTransMain/M1/twoStep m1_groups=12 -maxblocks=1000 useHybridEOS=False +aprox21
+
+
+# compile the code
+srcDir="${flashDir}/obj/obj_${simulationDirName}"
+cd "${srcDir}" || exit
+make -j 4 || exit 1
+
+# setup simulation folder
+simPath=${flashDir}/runs/${model_set}/${simulationDirName}
+mkdir "${simPath}"
+
+cd ${flashDir} || exit
+cp flash_helmnet.par "${simPath}"/
+#cp sbatch_run.sh ${simPath}/
+
+cd "${simPath}" || exit
+mkdir output
+
+# link files for simulation
+ln -sf "${srcDir}/flash4" .
+ln -sf "${srcDir}/helm_table.dat" .
+ln -sf "${srcDir}/SpeciesList.txt" .
+ln -sf "${srcDir}/winvne_v2.0.dat" .
+ln -sf ${eosDir} EoSTables
+ln -sf "${flashDir}/source/Simulation/SimulationMain/CoreCollapse/progenitors" .
+
+echo "Simulation is ready!"
+echo "Please write your flash.par and go!"

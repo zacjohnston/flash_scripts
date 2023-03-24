@@ -142,7 +142,7 @@ def get_end_dats(dat_vars, masses, alpha):
 # =======================================================
 #                      dat
 # =======================================================
-def get_all_dats(dat_vars, masses, alpha, dt=5e-5):
+def get_all_dats(dat_vars, masses, alpha, dt=5e-5, zero_bounce=True):
     """Returns reduced dat tables from set of models
 
     Returns: {mass: pd.DataFrame}
@@ -153,6 +153,7 @@ def get_all_dats(dat_vars, masses, alpha, dt=5e-5):
     masses : [str]
     alpha : str
     dt : float
+    zero_bounce : bool
     """
     dats = {}
 
@@ -160,12 +161,13 @@ def get_all_dats(dat_vars, masses, alpha, dt=5e-5):
         dats[mass] = get_dat(mass=mass,
                              dat_vars=dat_vars,
                              alpha=alpha,
-                             dt=dt)
+                             dt=dt,
+                             zero_bounce=zero_bounce)
 
     return dats
 
 
-def get_dat(mass, dat_vars, alpha, dt=5e-5):
+def get_dat(mass, dat_vars, alpha, dt=5e-5, zero_bounce=True):
     """Returns reduced dat tables from set of models
 
     Returns: {mass: pd.DataFrame}
@@ -176,8 +178,13 @@ def get_dat(mass, dat_vars, alpha, dt=5e-5):
     dat_vars : [str]
     alpha : str
     dt : float
+    zero_bounce : bool
     """
     model = load_model(mass=mass, alpha=alpha, load_dat=True)
+
+    if zero_bounce:
+        model.get_bounce_time()
+        model.dat['time'] -= model.bounce['time']
 
     dat = interpolate_dat(dat_table=model.dat,
                           dt=dt,

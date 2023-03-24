@@ -52,11 +52,14 @@ def load_model(mass,
     return sim
 
 
-def get_all(masses,
-            alpha,
-            max_dat_vars,
-            end_dat_vars,
-            ):
+# =======================================================
+#                   dat scalars
+# =======================================================
+def get_all_dat_scalars(masses,
+                        alpha,
+                        max_dat_vars,
+                        end_dat_vars,
+                        ):
     """Return lists of all variables
 
     Returns : {var: []}
@@ -88,9 +91,6 @@ def get_all(masses,
     return lists
 
 
-# =======================================================
-#                   dat scalars
-# =======================================================
 def get_max_dats(dat_vars, masses, alpha):
     """Return list of max values of .dat variables
 

@@ -34,11 +34,11 @@ if __name__ == "__main__":
     for alpha in alphas:
         table = pd.DataFrame({'mass': masses})
 
-        var_lists = scrape_tools.get_all(masses=masses,
-                                         alpha=alpha,
-                                         max_dat_vars=max_dat_vars,
-                                         end_dat_vars=end_dat_vars,
-                                         )
+        var_lists = scrape_tools.get_all_dat_scalars(masses=masses,
+                                                     alpha=alpha,
+                                                     max_dat_vars=max_dat_vars,
+                                                     end_dat_vars=end_dat_vars,
+                                                     )
 
         data = pd.DataFrame(var_lists)
         table = pd.concat([table, data], axis=1)

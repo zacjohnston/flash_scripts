@@ -10,7 +10,8 @@ from flashbang.simulation import Simulation
 # =======================================================
 def load_model(mass,
                alpha,
-               load_all=True):
+               load_all=False,
+               verbose=False):
     """Load model
 
     Returns : Simulation
@@ -20,6 +21,7 @@ def load_model(mass,
     mass : str
     alpha : str
     load_all : bool
+    verbose : str
     """
     run = f'stir2_14may19_s{mass}_alpha{alpha}'
     model = f'run_{mass}'
@@ -29,7 +31,9 @@ def load_model(mass,
                      model=model,
                      model_set=model_set,
                      load_all=load_all,
-                     config='stir')
+                     config='stir',
+                     verbose=verbose,
+                     )
 
     return sim
 
@@ -59,7 +63,7 @@ def get_all(masses,
             lists[f'{prefix}_{var}'] = []
 
     for mass in masses:
-        model = load_model(mass=mass, alpha=alpha, load_all=False)
+        model = load_model(mass=mass, alpha=alpha)
         model.load_dat()
 
         for var in max_dat_vars:
@@ -90,7 +94,7 @@ def get_max_dats(dat_vars, masses, alpha):
         lists[var] = []
 
     for mass in masses:
-        model = load_model(mass=mass, alpha=alpha, load_all=False)
+        model = load_model(mass=mass, alpha=alpha)
         model.load_dat()
 
         for var in dat_vars:
@@ -115,7 +119,7 @@ def get_end_dats(dat_vars, masses, alpha):
         lists[var] = []
 
     for mass in masses:
-        model = load_model(mass=mass, alpha=alpha, load_all=False)
+        model = load_model(mass=mass, alpha=alpha)
         model.load_dat()
 
         for var in dat_vars:
@@ -127,7 +131,7 @@ def get_end_dats(dat_vars, masses, alpha):
 # =======================================================
 #                      dat
 # =======================================================
-def get_dat_tables(dat_vars, masses, alpha, dt=5e-5):
+def get_all_dats(dat_vars, masses, alpha, dt=5e-5):
     """Returns reduced dat tables from set of models
 
     Returns: {mass: pd.DataFrame}
@@ -142,14 +146,34 @@ def get_dat_tables(dat_vars, masses, alpha, dt=5e-5):
     dats = {}
 
     for mass in masses:
-        model = load_model(mass=mass, alpha=alpha)
-        model.load_dat()
-
-        dats[mass] = interpolate_dat(dat_table=model.dat,
-                                     dt=dt,
-                                     dat_vars=dat_vars)
+        dats[mass] = get_dat(mass=mass,
+                             dat_vars=dat_vars,
+                             alpha=alpha,
+                             dt=dt)
 
     return dats
+
+
+def get_dat(mass, dat_vars, alpha, dt=5e-5):
+    """Returns reduced dat tables from set of models
+
+    Returns: {mass: pd.DataFrame}
+
+    Parameters
+    ----------
+    mass : str
+    dat_vars : [str]
+    alpha : str
+    dt : float
+    """
+    model = load_model(mass=mass, alpha=alpha)
+    model.load_dat()
+
+    dat = interpolate_dat(dat_table=model.dat,
+                          dt=dt,
+                          dat_vars=dat_vars)
+
+    return dat
 
 
 def interpolate_dat(dat_table, dt, dat_vars):

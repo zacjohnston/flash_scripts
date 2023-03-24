@@ -14,7 +14,8 @@ if __name__ == "__main__":
                 'rnue', 'rnueb', 'rnux', 'turb_antesonic', 'heat_eff']
 
     alphas = ['1.25']
-    dt = 5e-5  # timestep to interpolate onto
+    # masses = ['20.0', '40']
+    dt = 1e-3  # timestep to interpolate onto
 
     for alpha in alphas:
         path = f'out/scraped_time_series_alpha{alpha}'

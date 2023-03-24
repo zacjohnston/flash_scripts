@@ -11,6 +11,8 @@ from flashbang.simulation import Simulation
 def load_model(mass,
                alpha,
                load_all=False,
+               load_dat=False,
+               load_profiles=False,
                verbose=False):
     """Load model
 
@@ -21,6 +23,10 @@ def load_model(mass,
     mass : str
     alpha : str
     load_all : bool
+    load_dat : bool
+        ignored if load_all=True
+    load_profiles : bool
+        ignored if load_all=True
     verbose : str
     """
     run = f'stir2_14may19_s{mass}_alpha{alpha}'
@@ -30,10 +36,18 @@ def load_model(mass,
     sim = Simulation(run=run,
                      model=model,
                      model_set=model_set,
-                     load_all=load_all,
+                     load_all=False,
                      config='stir',
                      verbose=verbose,
                      )
+
+    if load_all:
+        sim.load_all()
+    else:
+        if load_dat:
+            sim.load_dat()
+        if load_profiles:
+            sim.load_all_profiles()
 
     return sim
 
@@ -63,8 +77,7 @@ def get_all(masses,
             lists[f'{prefix}_{var}'] = []
 
     for mass in masses:
-        model = load_model(mass=mass, alpha=alpha)
-        model.load_dat()
+        model = load_model(mass=mass, alpha=alpha, load_dat=True)
 
         for var in max_dat_vars:
             lists[f'max_{var}'] += [model.dat[var].max()]
@@ -94,8 +107,7 @@ def get_max_dats(dat_vars, masses, alpha):
         lists[var] = []
 
     for mass in masses:
-        model = load_model(mass=mass, alpha=alpha)
-        model.load_dat()
+        model = load_model(mass=mass, alpha=alpha, load_dat=True)
 
         for var in dat_vars:
             lists[var] += [model.dat[var].max()]
@@ -119,8 +131,7 @@ def get_end_dats(dat_vars, masses, alpha):
         lists[var] = []
 
     for mass in masses:
-        model = load_model(mass=mass, alpha=alpha)
-        model.load_dat()
+        model = load_model(mass=mass, alpha=alpha, load_dat=True)
 
         for var in dat_vars:
             lists[var] += [model.dat[var].iloc[-1]]
@@ -166,8 +177,7 @@ def get_dat(mass, dat_vars, alpha, dt=5e-5):
     alpha : str
     dt : float
     """
-    model = load_model(mass=mass, alpha=alpha)
-    model.load_dat()
+    model = load_model(mass=mass, alpha=alpha, load_dat=True)
 
     dat = interpolate_dat(dat_table=model.dat,
                           dt=dt,

@@ -142,31 +142,6 @@ def get_end_dats(dat_vars, masses, alpha):
 # =======================================================
 #                      dat
 # =======================================================
-def get_all_dats(dat_vars, masses, alpha, dt=5e-5, zero_bounce=True):
-    """Returns reduced dat tables from set of models
-
-    Returns: {mass: pd.DataFrame}
-
-    Parameters
-    ----------
-    dat_vars : [str]
-    masses : [str]
-    alpha : str
-    dt : float
-    zero_bounce : bool
-    """
-    dats = {}
-
-    for mass in masses:
-        dats[mass] = get_dat(mass=mass,
-                             dat_vars=dat_vars,
-                             alpha=alpha,
-                             dt=dt,
-                             zero_bounce=zero_bounce)
-
-    return dats
-
-
 def get_dat(mass, dat_vars, alpha, dt=5e-5, zero_bounce=True):
     """Returns reduced dat tables from set of models
 

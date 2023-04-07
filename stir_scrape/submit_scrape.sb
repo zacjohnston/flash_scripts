@@ -14,6 +14,7 @@
 if [ -z "${SCRIPT}" ]; then
   echo "Must provide SCRIPT name,
   e.g. sbatch --export=SCRIPT='scrape_max_dats.py' submit_scrape.sb"
+  exit 1
 fi
 
 conda activate flashbang

@@ -27,7 +27,7 @@ def load_model(mass,
         ignored if load_all=True
     load_profiles : bool
         ignored if load_all=True
-    verbose : str
+    verbose : bool
     """
     run = f'stir2_14may19_s{mass}_alpha{alpha}'
     model = f'run_{mass}'
@@ -192,3 +192,45 @@ def interpolate_dat(dat_table, dt, dat_vars):
         table[var] = np.interp(timesteps, dat_table['time'], dat_table[var])
 
     return table
+
+
+# =======================================================
+#                      profiles
+# =======================================================
+def get_nusphere(masses, alpha):
+    """Extract nusphere values from profiles
+
+    Returns: {var: []}
+    """
+    lists = {'zams': masses}
+
+    varlist = ['pns_mass', 'pns_rad', 'pns_dens', 'pns_temp',
+               'nu_lum_e', 'nu_lum_eb', 'nu_en_e', 'nu_en_eb']
+
+    for var in varlist:
+        lists[var] = []
+
+    for mass in masses:
+        model = load_model(mass=mass, alpha=alpha, load_all=True)
+
+        rnue = model.dat['rnue'].iloc[-1]
+        profile = model.profiles.isel(chk=-1)
+        dat = model.dat.iloc[-1]
+
+        lists['pns_rad'] += [rnue]
+        lists['pns_mass'] += [interp_profile(rnue, 'mass', profile)]
+        lists['pns_dens'] += [interp_profile(rnue, 'dens', profile)]
+        lists['pns_temp'] += [interp_profile(rnue, 'temp', profile)]
+
+        lists['nu_lum_e'] += [dat['lnue']]
+        lists['nu_lum_eb'] += [dat['lnueb']]
+        lists['nu_en_e'] += [dat['enue']]
+        lists['nu_en_eb'] += [dat['enueb']]
+
+    return lists
+
+
+def interp_profile(radius, var, profile):
+    """Interpolate profile variable at specific radius
+    """
+    return np.interp(radius, profile['r'], profile[var])

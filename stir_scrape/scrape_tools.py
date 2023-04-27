@@ -205,7 +205,8 @@ def get_nusphere(masses, alpha):
     lists = {'zams': masses}
 
     varlist = ['pns_mass', 'pns_rad', 'pns_dens', 'pns_temp',
-               'nu_lum_e', 'nu_lum_eb', 'nu_en_e', 'nu_en_eb']
+               'nu_lum_e', 'nu_lum_eb', 'nu_en_e', 'nu_en_eb',
+               'max_s']
 
     for var in varlist:
         lists[var] = []
@@ -226,6 +227,8 @@ def get_nusphere(masses, alpha):
         lists['nu_lum_eb'] += [dat['lnueb']]
         lists['nu_en_e'] += [dat['enue']]
         lists['nu_en_eb'] += [dat['enueb']]
+
+        lists['max_s'] += [float(profile['entr'].max().values)]
 
     return lists
 

@@ -10,7 +10,7 @@ if __name__ == "__main__":
     alphas = ['1.25']
 
     for alpha in alphas:
-        var_lists = scrape_tools.get_nusphere(masses=masses, alpha=alpha)
+        var_lists = scrape_tools.get_nuwind(masses=masses, alpha=alpha)
 
         table = pd.DataFrame(var_lists)
         table.to_csv(f'out/nusphere_alpha{alpha}.csv', index=False)

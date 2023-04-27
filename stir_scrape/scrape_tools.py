@@ -197,8 +197,8 @@ def interpolate_dat(dat_table, dt, dat_vars):
 # =======================================================
 #                      profiles
 # =======================================================
-def get_nusphere(masses, alpha):
-    """Extract nusphere values from profiles
+def get_nuwind(masses, alpha):
+    """Extract neutrino wind variables from last profiles
 
     Returns: {var: []}
     """

@@ -1,9 +1,4 @@
 
-p = '/mnt/research/SNAPhU/STIR/sukhbold_2018/progenitors/sukhbold_2018_{zams}.FLASH'
-flash4 = '/mnt/research/SNAPhU/zac/BANG/obj/obj_sn1987a/flash4'
-SFHo.h5 = '/mnt/research/SNAPhU/Tables/SFHo.h5'
-NuLib_SFHo.h5 = '/mnt/research/SNAPhU/Tables/NuLib_SFHo_noweakrates_rho82_temp65_ye60_ng12_ns3_Itemp65_Ieta61_version1.0_20170719.h5'
-
 def write_parfile(filepath,
                   zams,
                   dat_steps=100,
